@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thalyson — Portfolio Pixel (8-bit)</title>
+  <meta name="description" content="Portfólio estilo 8-bit/pixel art com cidade noturna animada." />
+
+  <style>
+    /* =========================
+       Design Tokens
+    ========================== */
+    :root{
+      --bg0:#070712;
+      --bg1:#0b0b1f;
+      --ink:#eef0ff;
+      --muted:#b7bce6;
+
+      --accent:#7CFFB2;
+      --accent2:#7DB7FF;
+      --warn:#FFDA7D;
+      --danger:#FF7D9C;
+
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.09);
+      --stroke: rgba(255,255,255,.14);
+      --stroke2: rgba(255,255,255,.18);
+
+      --shadow: 0 18px 45px rgba(0,0,0,.45);
+      --shadow2: 0 10px 22px rgba(0,0,0,.35);
+
+      --radius: 18px;
+      --radius2: 14px;
+
+      --pad-1: 10px;
+      --pad-2: 14px;
+      --pad-3: 18px;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --ui: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    /* =========================
+       Base
+    ========================== */
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family: var(--ui);
+      overflow-x:hidden;
+      background:
+        radial-gradient(1200px 700px at 70% 10%, #101043 0%, var(--bg0) 65%, #04040a 100%);
+    }
+    a{ color:inherit; }
+    .pixel{ font-family: var(--mono); letter-spacing:.4px; }
+
+    /* Focus visible */
+    :focus-visible{
+      outline: 2px solid rgba(124,255,178,.85);
+      outline-offset: 3px;
+      border-radius: 10px;
+    }
+
+    /* Skip link */
+    .skip{
+      position:absolute; left:-9999px; top: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.10);
+      border:1px solid var(--stroke2);
+      border-radius: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      z-index: 10;
+    }
+    .skip:focus{ left: 12px; }
+
+    /* Layout */
+    .wrap{
+      width:min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 26px 0 80px;
+      position:relative;
+      z-index: 2;
+    }
+    .stack{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    @media (max-width: 920px){
+      .stack{ grid-template-columns:1fr; }
+    }
+
+    /* Background canvas */
+    .bg{
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events:none;
+      opacity: .95;
+      filter: saturate(1.05);
+    }
+
+    /* =========================
+       Card System
+    ========================== */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+      position:relative;
+    }
+    .card--soft{
+      background: rgba(255,255,255,.05);
+      box-shadow: var(--shadow2);
+    }
+    .card__head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    }
+    .card__head h3{
+      margin:0;
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing:.6px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .card__head p{
+      margin:0;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+    .card__body{
+      padding: 14px 16px 16px;
+    }
+
+    /* =========================
+       Topbar
+    ========================== */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.05));
+      border:1px solid var(--stroke2);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 14px;
+      z-index: 5;
+    }
+    .brand{ display:flex; align-items:center; gap:10px; min-width: 200px; }
+    .logo{
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(124,255,178,.26), rgba(125,183,255,.22));
+      border:1px solid rgba(255,255,255,.22);
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+    }
+    .logo:before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(90deg, transparent 0 45%, rgba(255,255,255,.18) 45% 55%, transparent 55% 100%),
+        linear-gradient(0deg, transparent 0 45%, rgba(255,255,255,.18) 45% 55%, transparent 55% 100%);
+      opacity:.22;
+      transform: scale(1.35);
+    }
+    .logo span{
+      font-family: var(--mono);
+      font-weight: 900;
+      font-size: 14px;
+      text-shadow: 0 2px 0 rgba(0,0,0,.35);
+    }
+    .brand h1{
+      margin:0;
+      font-size: 14px;
+      line-height:1.1;
+      font-weight: 900;
+    }
+    .brand p{
+      margin:2px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+    .nav a{
+      text-decoration:none;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .nav a:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.22);
+    }
+
+    /* Topbar Controls */
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .toggle{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      font-family: var(--mono);
+      font-size: 12px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .toggle:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.22);
+    }
+    .switch{
+      width: 32px; height: 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.25);
+      position:relative;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+    }
+    .switch:before{
+      content:"";
+      position:absolute;
+      top: 50%;
+      left: 2px;
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      transform: translateY(-50%);
+      background: rgba(233,236,255,.9);
+      box-shadow: 0 8px 14px rgba(0,0,0,.25);
+      transition: left .14s ease, background .14s ease;
+    }
+    .toggle[data-on="true"] .switch{
+      border-color: rgba(124,255,178,.35);
+      background: rgba(124,255,178,.10);
+    }
+    .toggle[data-on="true"] .switch:before{
+      left: 16px;
+      background: rgba(124,255,178,.95);
+    }
+
+    @media (max-width: 920px){
+      .brand{ min-width:auto; }
+      .nav{ justify-content:flex-start; }
+    }
+
+    /* =========================
+       Hero
+    ========================== */
+    .hero{ padding: var(--pad-3); }
+    .kicker{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .badge{
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--ink);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+    }
+    .dot{
+      width: 8px; height: 8px;
+      border-radius: 2px;
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(124,255,178,.55);
+    }
+    .hero h2{
+      margin: 0 0 10px;
+      font-size: clamp(22px, 3.1vw, 34px);
+      line-height: 1.12;
+      letter-spacing: -0.5px;
+    }
+    .hero p{
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.6;
+      max-width: 72ch;
+    }
+
+    /* Buttons */
+    .cta{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .btn{
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--ink);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      text-decoration:none;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.22);
+    }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(124,255,178,.22), rgba(125,183,255,.18));
+      border-color: rgba(124,255,178,.38);
+    }
+    .key{ color: var(--accent); opacity:.95; }
+    .btn.secondary .key{ color: var(--accent2); }
+
+    /* Chips */
+    .chips{ display:flex; flex-wrap:wrap; gap:10px; }
+    .chip{
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+    }
+    .chip i{
+      width: 8px; height: 8px;
+      border-radius: 2px;
+      background: var(--accent2);
+      box-shadow: 0 0 18px rgba(125,183,255,.45);
+      display:inline-block;
+    }
+
+    /* Aside */
+    .side{ padding: 16px; }
+    .side h3{ margin:0 0 8px; font-size:14px; font-family: var(--mono); }
+    .side .small{ margin:0 0 12px; font-size: 12.8px; color: var(--muted); line-height:1.6; }
+
+    .statgrid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      margin-top: 12px;
+    }
+    .stat{
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .stat b{
+      display:block;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom:6px;
+    }
+    .stat span{
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    /* Projects */
+    .projects{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 760px){ .projects{ grid-template-columns: 1fr; } }
+
+    .proj{
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      position:relative;
+      overflow:hidden;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .proj:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.20);
+      background: rgba(255,255,255,.06);
+    }
+    .proj:before{
+      content:"";
+      position:absolute; inset:-20%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(124,255,178,.10) 0 40%, transparent 42%),
+        radial-gradient(circle at 70% 30%, rgba(125,183,255,.10) 0 38%, transparent 40%),
+        radial-gradient(circle at 60% 80%, rgba(255,218,125,.08) 0 35%, transparent 37%);
+      opacity:.85;
+      filter: blur(2px);
+      pointer-events:none;
+    }
+    .proj h4{
+      margin:0 0 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      position:relative;
+    }
+    .proj p{
+      margin:0 0 10px;
+      color: var(--muted);
+      font-size: 13.2px;
+      line-height: 1.55;
+      position:relative;
+    }
+    .proj .meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin: 10px 0 10px;
+      position:relative;
+    }
+    .tag{
+      font-family: var(--mono);
+      font-size: 11.5px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: rgba(233,236,255,.85);
+    }
+    .proj .links{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      position:relative;
+    }
+    .proj .links a{
+      font-family: var(--mono);
+      font-size: 12px;
+      text-decoration:none;
+      border-bottom: 1px dashed rgba(255,255,255,.28);
+      padding-bottom: 2px;
+      opacity:.95;
+    }
+
+    /* Filter bar */
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
+    }
+    .pill{
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .pill:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.20);
+    }
+    .pill[aria-pressed="true"]{
+      border-color: rgba(124,255,178,.40);
+      background: rgba(124,255,178,.10);
+    }
+
+    /* Footer */
+    footer{
+      margin-top: 18px;
+      text-align:center;
+      color: rgba(233,236,255,.55);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 12px 0 0;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .bg{ display:none; }
+      .btn, .nav a, .toggle, .proj, .pill{ transition:none; }
+      *{ scroll-behavior:auto!important; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip" href="#main">Pular para o conteúdo</a>
+  <canvas class="bg" id="city" aria-hidden="true"></canvas>
+
+  <div class="wrap">
+    <header class="topbar" role="banner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><span>8B</span></div>
+        <div>
+          <h1 class="pixel">THALYSON</h1>
+          <p class="pixel">Full Stack • Pixel vibes • UI com identidade</p>
+        </div>
+      </div>
+
+      <div class="controls" aria-label="Controles visuais">
+        <button class="toggle" id="toggleAnim" type="button" data-on="true" aria-pressed="true">
+          <span class="pixel">ANIMAÇÃO</span>
+          <span class="switch" aria-hidden="true"></span>
+        </button>
+        <button class="toggle" id="toggleRain" type="button" data-on="false" aria-pressed="false">
+          <span class="pixel">CHUVA</span>
+          <span class="switch" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <nav class="nav" aria-label="Navegação">
+        <a href="#sobre">SOBRE</a>
+        <a href="#skills">SKILLS</a>
+        <a href="#projetos">PROJETOS</a>
+        <a href="#contato">CONTATO</a>
+      </nav>
+    </header>
+
+    <div class="stack" id="main">
+      <main class="card hero" id="sobre" role="main">
+        <div class="kicker">
+          <span class="badge"><span class="dot"></span> DISPONÍVEL so quando quero</span>
+          <span class="badge">🌃 Cidade Noturna 8-bit</span>
+        </div>
+
+        <h2 class="pixel">Eu construo experiências web.</h2>
+        <p>
+          Sou <b>Thalyson</b>, desenvolvedor <b>Full Stack</b> em evolução constante.
+          Curto criar interfaces com personalidade (tipo esse visual <span class="pixel">pixel/cyber</span>),
+          com foco em <b>organização</b>, <b>performance</b> e <b>boa UX</b>.
+          mas sinto que preciso melhora muita coisa ainda
+        </p> 
+
+
+        <div class="cta" role="group" aria-label="Ações principais">
+          <a class="btn primary" href="#contato"><span class="key">▶</span> FALAR COMIGO</a>
+          <a class="btn secondary" href="https://github.com/" target="_blank" rel="noreferrer"><span class="key">⌁</span> GITHUB</a>
+          <a class="btn secondary" href="https://www.linkedin.com/" target="_blank" rel="noreferrer"><span class="key">⌁</span> LINKEDIN</a>
+          <a class="btn" href="#" id="btnCV"><span class="key">⬇</span> BAIXAR CV</a>
+        </div>
+
+        <section class="card card--soft" style="margin-top:16px;">
+          <div class="card__head">
+            <h3>O que eu entrego</h3>
+            <p>organização + estética + performance</p>
+          </div>
+          <div class="card__body">
+            <div class="chips">
+              <span class="chip"><i></i>Landing pages rápidas</span>
+              <span class="chip"><i></i>Sites portfólio</span>
+              <span class="chip"><i></i>UI temática</span>
+              <span class="chip"><i></i>APIs e integrações</span>
+              <span class="chip"><i></i>Manutenção e evolução</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="card side" aria-label="Resumo lateral">
+        <h3 class="pixel">STATUS</h3>
+        <p class="small">
+          Construindo carreira em tecnologia e fortalecendo base Full Stack.
+          Curto desafios que misturam <b>design</b>, <b>lógica</b> e <b>criatividade</b>.
+        </p>
+
+        <div class="statgrid" aria-label="Destaques">
+          <div class="stat">
+            <b class="pixel">FOCO</b>
+            <span class="pixel">Front end</span>
+          </div>
+          <div class="stat">
+            <b class="pixel">ESTILO</b>
+            <span class="pixel">Pixel / Neo</span>
+          </div>
+          <div class="stat">
+            <b class="pixel">STACK</b>
+            <span class="pixel">JS • HTML • CSS</span>
+          </div>
+          <div class="stat">
+            <b class="pixel">OBJETIVO</b>
+            <span class="pixel">Projetos reais</span>
+          </div>
+        </div>
+
+        <section class="card card--soft" style="margin-top:14px;" id="skills">
+          <div class="card__head">
+            <h3>Skills</h3>
+            <p>o que eu uso no dia a dia</p>
+          </div>
+          <div class="card__body">
+            <div class="chips">
+              <span class="chip"><i></i>HTML5</span>
+              <span class="chip"><i></i>CSS3</span>
+              <span class="chip"><i></i>JavaScript</span>
+              <span class="chip"><i></i>Responsivo</span>
+              <span class="chip"><i></i>Git</span>
+              <span class="chip"><i></i>UX básico</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="card" id="projetos">
+      <div class="card__head">
+        <h3>Projetos</h3>
+        <p>filtre por categoria (sem perder o estilo)</p>
+      </div>
+      <div class="card__body">
+        <div class="filters" role="toolbar" aria-label="Filtros de projetos">
+          <button class="pill" type="button" aria-pressed="true" data-filter="all">TODOS</button>
+          <button class="pill" type="button" aria-pressed="false" data-filter="front">FRONT</button>
+          <button class="pill" type="button" aria-pressed="false" data-filter="back">BACK</button>
+          <button class="pill" type="button" aria-pressed="false" data-filter="ui">UI</button>
+          <button class="pill" type="button" aria-pressed="false" data-filter="api">API</button>
+        </div>
+
+        <div class="projects" id="projectGrid" aria-live="polite">
+          <article class="proj" data-tags="front ui">
+            <h4 class="pixel">01 • Landing Pixel Night</h4>
+            <p>Landing 8-bit com layout organizado, foco em performance e CTA.</p>
+            <div class="meta">
+              <span class="tag">front</span><span class="tag">ui</span><span class="tag">performance</span>
+            </div>
+            <div class="links">
+              <a href="#" target="_blank" rel="noreferrer">demo</a>
+              <a href="#" target="_blank" rel="noreferrer">repo</a>
+            </div>
+          </article>
+
+          <article class="proj" data-tags="front back api">
+            <h4 class="pixel">02 • App de Estudos</h4>
+            <p>Checklist/flashcards com filtros, progresso e estados bem definidos.</p>
+            <div class="meta">
+              <span class="tag">front</span><span class="tag">back</span><span class="tag">api</span>
+            </div>
+            <div class="links">
+              <a href="#" target="_blank" rel="noreferrer">demo</a>
+              <a href="#" target="_blank" rel="noreferrer">repo</a>
+            </div>
+          </article>
+
+          <article class="proj" data-tags="ui front">
+            <h4 class="pixel">03 • Página de Conteúdo</h4>
+            <p>Template com SEO básico, leitura confortável e seções reutilizáveis.</p>
+            <div class="meta">
+              <span class="tag">ui</span><span class="tag">front</span><span class="tag">seo</span>
+            </div>
+            <div class="links">
+              <a href="#" target="_blank" rel="noreferrer">demo</a>
+              <a href="#" target="_blank" rel="noreferrer">repo</a>
+            </div>
+          </article>
+
+          <article class="proj" data-tags="api back">
+            <h4 class="pixel">04 • API / Integração</h4>
+            <p>Integração com API: fetch, tratamento de erro, estados e boas práticas.</p>
+            <div class="meta">
+              <span class="tag">api</span><span class="tag">back</span><span class="tag">clean</span>
+            </div>
+            <div class="links">
+              <a href="#" target="_blank" rel="noreferrer">demo</a>
+              <a href="#" target="_blank" rel="noreferrer">repo</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="contato" style="margin-top:18px;">
+      <div class="card__head">
+        <h3>Contato</h3>
+        <p>rápido e direto</p>
+      </div>
+      <div class="card__body">
+        <p style="margin:0;color:var(--muted);line-height:1.7;font-size:14px;max-width:70ch;">
+          Quer um site com personalidade (tipo esse), ou precisa de ajuda em um projeto?
+          Me chama:
+        </p>
+        <div class="cta" style="margin-top:12px;">
+          <a class="btn primary" href="mailto:seuemail@exemplo.com"><span class="key">✉</span> EMAIL</a>
+          <a class="btn" href="https://wa.me/55SEUNUMERO" target="_blank" rel="noreferrer"><span class="key">☎</span> WHATSAPP</a>
+          <a class="btn secondary" href="https://instagram.com/" target="_blank" rel="noreferrer"><span class="key">◎</span> INSTAGRAM</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>© <span id="year"></span> THALYSON • pixel city night build</div>
+    </footer>
+  </div>
+
+  <script>
+    /* ==========================================
+       Helpers
+    ========================================== */
+    const $  = (q, el=document) => el.querySelector(q);
+    const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
+
+    function setToggle(btn, on){
+      btn.dataset.on = String(on);
+      btn.setAttribute("aria-pressed", String(on));
+    }
+
+    /* ==========================================
+       Footer year
+    ========================================== */
+    $("#year").textContent = new Date().getFullYear();
+
+    /* ==========================================
+       CV download (troque por PDF real depois)
+    ========================================== */
+    $("#btnCV").addEventListener("click", (e) => {
+      e.preventDefault();
+      const content =
+`THALYSON — CURRÍCULO (rascunho)
+--------------------------------
+• Full Stack (em evolução)
+• Foco: Web, UI, performance, organização
+
+Links:
+- GitHub: https://github.com/SEUUSUARIO
+- LinkedIn: https://linkedin.com/in/SEUUSUARIO
+Contato:
+- Email:thalysonacerman@gmail.com
+`;
+      const blob = new Blob([content], {type:"text/plain;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "thalyson-cv.txt";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    /* ==========================================
+       Project filters
+    ========================================== */
+    const pills = $$(".pill");
+    const projectCards = $$(".proj");
+
+    function applyFilter(filter){
+      pills.forEach(p => p.setAttribute("aria-pressed", String(p.dataset.filter === filter)));
+      projectCards.forEach(card => {
+        const tags = (card.dataset.tags || "").split(/\s+/).filter(Boolean);
+        const show = filter === "all" || tags.includes(filter);
+        card.style.display = show ? "" : "none";
+      });
+    }
+    pills.forEach(p => p.addEventListener("click", () => applyFilter(p.dataset.filter)));
+
+    /* ==========================================
+       Canvas: Pixel City Night (Performance + Toggles)
+    ========================================== */
+    const canvas = $("#city");
+    const ctx = canvas.getContext("2d", { alpha:true });
+
+    const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    let W = 0, H = 0;
+
+    const state = {
+      t: 0,
+      stars: [],
+      layers: [],
+      rain: false,
+      anim: true,
+      running: true,
+      last: 0,
+      acc: 0,
+      fps: 30 // cap ~30fps (mais leve)
+    };
+
+    function rand(a,b){ return a + Math.random()*(b-a); }
+    function randi(a,b){ return (a + Math.floor(Math.random()*(b-a+1))); }
+    function lerp(a,b,t){ return a + (b-a)*t; }
+    function lerpColor(c1,c2,t){
+      return [
+        Math.floor(lerp(c1[0],c2[0],t)),
+        Math.floor(lerp(c1[1],c2[1],t)),
+        Math.floor(lerp(c1[2],c2[2],t)),
+      ];
+    }
+
+    function resize(){
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+      canvas.width  = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+      buildScene();
+    }
+
+    function buildScene(){
+      state.stars = Array.from({length: Math.min(220, Math.floor(W*H/12000))}, () => ({
+        x: Math.random()*W,
+        y: Math.random()*Math.min(H*0.55, 420),
+        s: Math.random()<0.75 ? 1 : 2,
+        tw: rand(0.2, 1.0),
+        sp: rand(0.006, 0.02)
+      }));
+
+      // Layers of buildings
+      const layerCount = 4;
+      state.layers = [];
+      for(let i=0;i<layerCount;i++){
+        const depth = i/(layerCount-1);
+        const baseY = H * (0.62 + depth*0.10);
+        const minW = 26 + depth*20;
+        const maxW = 64 + depth*60;
+        const minH = 60 + depth*70;
+        const maxH = 160 + depth*220;
+
+        const buildings = [];
+        let x = -50;
+        while(x < W + 50){
+          const bw = randi(minW, maxW);
+          const bh = randi(minH, maxH);
+          const by = baseY - bh;
+
+          buildings.push({
+            x, y: by, w: bw, h: bh,
+            wx: randi(3, 7),
+            wy: randi(6, 12),
+            lit: Math.random()*0.55 + 0.20,
+            neon: Math.random() < (0.08 + depth*0.05)
+          });
+
+          x += bw + randi(6, 16);
+        }
+
+        state.layers.push({
+          depth,
+          baseY,
+          speed: (0.08 + depth*0.18),
+          buildings,
+          offset: rand(0, 200)
+        });
+      }
+    }
+
+    function drawSky(){
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0, "#07071a");
+      g.addColorStop(0.35, "#090a26");
+      g.addColorStop(0.7, "#050510");
+      g.addColorStop(1, "#020205");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,W,H);
+
+      // moon glow
+      const mx = W*0.78, my = H*0.18;
+      const mg = ctx.createRadialGradient(mx,my, 0, mx,my, 180);
+      mg.addColorStop(0, "rgba(125,183,255,.22)");
+      mg.addColorStop(0.35, "rgba(124,255,178,.08)");
+      mg.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = mg;
+      ctx.fillRect(0,0,W,H);
+
+      // stars
+      for(const st of state.stars){
+        const tw = 0.55 + 0.45*Math.sin(state.t*st.sp + st.tw*10);
+        ctx.fillStyle = `rgba(233,236,255,${0.25 + 0.55*tw})`;
+        ctx.fillRect(st.x|0, st.y|0, st.s, st.s);
+      }
+    }
+
+    function drawBuildings(){
+      ctx.fillStyle = "rgba(0,0,0,.45)";
+      ctx.fillRect(0, H*0.70, W, H*0.30);
+
+      for(const layer of state.layers){
+        const par = layer.depth;
+        const baseCol = lerpColor([8,8,20],[18,18,45], 0.35+par*0.55);
+        const edgeCol = "rgba(255,255,255,.08)";
+        const winOn  = `rgba(255,218,125,${0.35 - par*0.12})`;
+        const winOff = `rgba(233,236,255,0.06)`;
+
+        const scroll = (state.t * layer.speed * 18 + layer.offset) % (W + 220);
+
+        for(const b of layer.buildings){
+          const x = (b.x - scroll) | 0;
+          const y = b.y | 0;
+          const w = b.w | 0;
+          const h = b.h | 0;
+
+          if(x > W+80 || x + w < -80) continue;
+
+          ctx.fillStyle = `rgb(${baseCol[0]},${baseCol[1]},${baseCol[2]})`;
+          ctx.fillRect(x,y,w,h);
+
+          ctx.fillStyle = edgeCol;
+          ctx.fillRect(x,y, w, 1);
+          ctx.fillRect(x,y, 1, h);
+          ctx.fillRect(x+w-1,y, 1, h);
+
+          const pad = 6;
+          const cellX = Math.max(4, ((w - pad*2) / b.wx) | 0);
+          const cellY = Math.max(5, ((h - pad*2) / b.wy) | 0);
+          const ww = Math.max(2, (cellX*0.45) | 0);
+          const wh = Math.max(2, (cellY*0.35) | 0);
+
+          for(let iy=0; iy<b.wy; iy++){
+            for(let ix=0; ix<b.wx; ix++){
+              const wx = x + pad + ix*cellX + ((cellX*0.25) | 0);
+              const wy = y + pad + iy*cellY + ((cellY*0.25) | 0);
+
+              // deterministic-ish flicker (sem usar Math.random todo frame)
+              const seed = (ix*97 + iy*131 + ((layer.depth*1000)|0) + (b.x|0)) % 997;
+              const flick = 0.5 + 0.5*Math.sin(state.t*0.9 + seed);
+              const on = (seed % 7 !== 0) && (flick > (0.35 + par*0.12));
+              ctx.fillStyle = on ? winOn : winOff;
+              ctx.fillRect(wx, wy, ww, wh);
+            }
+          }
+
+          if(b.neon && w > 40){
+            const pulse = 0.55 + 0.45*Math.sin(state.t*2.2 + (b.x*0.01));
+            const ny = y + ((h*0.22)|0);
+            const nx = x + ((w*0.15)|0);
+            const nw = (w*0.55)|0;
+            ctx.fillStyle = `rgba(125,183,255,${0.10 + 0.18*pulse})`;
+            ctx.fillRect(nx, ny, nw, 3);
+            ctx.fillStyle = `rgba(124,255,178,${0.08 + 0.16*pulse})`;
+            ctx.fillRect(nx, ny+4, (nw*0.72)|0, 2);
+          }
+        }
+      }
+    }
+
+    function drawGroundFog(){
+      const y = H*0.62;
+      const fog = ctx.createLinearGradient(0,y,0,H);
+      fog.addColorStop(0, "rgba(124,255,178,.05)");
+      fog.addColorStop(0.3, "rgba(125,183,255,.06)");
+      fog.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = fog;
+      ctx.fillRect(0,y,W,H-y);
+    }
+
+    function drawScanlines(){
+      ctx.fillStyle = "rgba(0,0,0,.08)";
+      for(let y=0; y<H; y+=3) ctx.fillRect(0,y,W,1);
+    }
+
+    function drawRain(){
+      if(!state.rain) return;
+      ctx.fillStyle = "rgba(125,183,255,.10)";
+      const count = Math.min(220, (W/6)|0);
+      for(let i=0;i<count;i++){
+        const x = (i*7 + (state.t*180)) % (W+80) - 40;
+        const y = (i*19 + (state.t*260)) % (H+120) - 60;
+        ctx.fillRect(x, y, 2, 10);
+      }
+    }
+
+    function render(){
+      ctx.clearRect(0,0,W,H);
+      drawSky();
+      drawBuildings();
+      drawGroundFog();
+      drawRain();
+      drawScanlines();
+    }
+
+    function loop(ts){
+      if(!state.running) return;
+
+      const dt = (ts - state.last) || 0;
+      state.last = ts;
+
+      // se animação desativada, não atualiza o tempo (fica “congelado” bonito)
+      if(state.anim){
+        state.acc += dt;
+        const frame = 1000 / state.fps;
+        if(state.acc >= frame){
+          state.t = ts / 1000;
+          state.acc = 0;
+          render();
+        }
+      } else {
+        // render só uma vez (se ainda não renderizou nesse estado)
+        if(state.acc !== -1){
+          render();
+          state.acc = -1;
+        }
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    // Visibility pause
+    document.addEventListener("visibilitychange", () => {
+      state.running = !document.hidden;
+      if(state.running){
+        state.last = performance.now();
+        requestAnimationFrame(loop);
+      }
+    });
+
+    // Toggles
+    const toggleAnim = $("#toggleAnim");
+    const toggleRain = $("#toggleRain");
+
+    toggleAnim.addEventListener("click", () => {
+      state.anim = !state.anim;
+      state.acc = 0;
+      setToggle(toggleAnim, state.anim);
+      // se anim voltou, volta a renderizar normalmente
+      if(state.anim && state.running){
+        state.last = performance.now();
+        requestAnimationFrame(loop);
+      }
+      // se desligou anim, força um render “parado”
+      if(!state.anim) state.acc = 0;
+    });
+
+    toggleRain.addEventListener("click", () => {
+      state.rain = !state.rain;
+      setToggle(toggleRain, state.rain);
+      // se animação está desligada, re-render pra mostrar a chuva (ligada/desligada)
+      if(!state.anim) { state.acc = 0; render(); state.acc = -1; }
+    });
+
+    // Defaults (coerentes com UI)
+    state.anim = true; setToggle(toggleAnim, true);
+    state.rain = false; setToggle(toggleRain, false);
+
+    window.addEventListener("resize", resize, {passive:true});
+    document.documentElement.style.scrollBehavior = "smooth";
+
+    resize();
+    state.last = performance.now();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
